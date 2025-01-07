@@ -1,21 +1,15 @@
 "use client";
 
-import { ChevronDownIcon } from "@/components/icons";
 import Accordion from "@/components/ui/Accordion";
 import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
-import { cn, objectToQueryString } from "@/lib/utils";
+import { objectToQueryString } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-const FilterSection = ({ searchParams }) => {
-  const CategoryItems = [
-    { label: "All", value: "all" },
-    { label: "Kid's Clothing", value: "Kid's Clothing" },
-    { label: "Men's Clothing", value: "Men's Clothing" },
-  ];
+const FilterSection = ({ searchParams, productTypes }) => {
   const SortByItems = [
     { label: "All", value: "all" },
-    { label: "Price high to low", value: "highToLow" },
-    { label: "Price low to high", value: "lowToHigh" },
+    { label: "Price high to low", value: "-sellPrice" },
+    { label: "Price low to high", value: "sellPrice" },
   ];
   const RatingItems = [
     { label: "All", value: "all" },
@@ -31,6 +25,11 @@ const FilterSection = ({ searchParams }) => {
     { label: "Out of Stock", value: "false" },
   ];
 
+  const productTypeId = searchParams.productTypeId || "all";
+  const sortBy = searchParams.sortBy || "all";
+  const rating = searchParams.rating || "all";
+  const inStock = searchParams.inStock || "all";
+
   const router = useRouter();
   const openAccordion = searchParams.openAccordion?.split(",") || [];
 
@@ -39,7 +38,7 @@ const FilterSection = ({ searchParams }) => {
 
     newParamsArray?.forEach((param) => {
       Object.entries(param).forEach(([key, value]) => {
-        if (value === null || value === "") {
+        if (value === null || value === "" || value === "all") {
           delete updatedSearchParams[key];
         } else {
           updatedSearchParams[key] = value;
@@ -61,8 +60,17 @@ const FilterSection = ({ searchParams }) => {
   const minPrice = searchParams.minPrice || "0";
   const maxPrice = searchParams.maxPrice || "100";
 
+  //
   const handlePriceRangeChange = (value) => {
     updateSearchParams([{ minPrice: value[0] }, { maxPrice: value[1] }]);
+  };
+  //handle filter change value
+  const handleFilterChange = (filterType, value) => {
+    updateSearchParams([
+      {
+        [filterType]: value,
+      },
+    ]);
   };
 
   return (
@@ -76,12 +84,16 @@ const FilterSection = ({ searchParams }) => {
         handleAccordion={handleAccordion}
       >
         <div className="flex flex-wrap gap-3 pt-2">
-          {CategoryItems.map((item, index) => (
+          {productTypes.map((item, index) => (
             <div key={index}>
               <input
                 type="checkbox"
                 id={`productType-${item.value}`}
                 className="hidden peer"
+                name="productTypeId"
+                value={item.value}
+                checked={productTypeId == item.value}
+                onChange={() => handleFilterChange("productTypeId", item.value)}
               />
               <label
                 htmlFor={`productType-${item.value}`}
@@ -106,6 +118,10 @@ const FilterSection = ({ searchParams }) => {
                 type="checkbox"
                 id={`sortBy-${item.value}`}
                 className="hidden peer"
+                name="sortBy"
+                value={item.value}
+                checked={sortBy == item.value}
+                onChange={() => handleFilterChange("sortBy", item.value)}
               />
               <label
                 htmlFor={`sortBy-${item.value}`}
@@ -150,6 +166,10 @@ const FilterSection = ({ searchParams }) => {
                 type="checkbox"
                 id={`rating-${item.value}`}
                 className="hidden peer"
+                name="rating"
+                value={item.value}
+                checked={rating == item.value}
+                onChange={() => handleFilterChange("rating", item.value)}
               />
               <label
                 htmlFor={`rating-${item.value}`}
@@ -174,6 +194,10 @@ const FilterSection = ({ searchParams }) => {
                 type="checkbox"
                 id={`availability-${item.value}`}
                 className="hidden peer"
+                name="inStock"
+                value={item.value}
+                checked={inStock == item.value}
+                onChange={() => handleFilterChange("inStock", item.value)}
               />
               <label
                 htmlFor={`availability-${item.value}`}
