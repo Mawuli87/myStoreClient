@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Layout/Header";
 import Script from "next/script";
+import { ProductProvider } from "@/components/Layout/ProductContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,10 @@ export default function RootLayout({ children }) {
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             strategy="beforeInteractive"
           />
-          <Header />
-          <div className="container">{children}</div>
+          <ProductProvider>
+            <Header />
+            <div className="container">{children}</div>
+          </ProductProvider>
         </body>
       </html>
     </>
