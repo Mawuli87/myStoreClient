@@ -14,7 +14,7 @@ export default function Button({
       onClick={onClick}
       {...props}
     >
-      Add to Cart
+      {children}
     </button>
   );
 }

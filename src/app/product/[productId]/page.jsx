@@ -2,7 +2,7 @@ import { getProductById } from "@/actions/productActions";
 import Product from "@/screens/product";
 
 const ProductPage = async ({ params }) => {
-  const { productId } = params;
+  const { productId } = await params;
   const product = await getProductById(productId);
 
   return (

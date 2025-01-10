@@ -3,7 +3,7 @@
 import { objectToQueryString } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function getProducts(searchParams) {
   const filteredParams = { ...searchParams };

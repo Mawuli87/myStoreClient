@@ -1,14 +1,36 @@
+"use client";
+
 import { StarIcon } from "@/components/icons";
+import { useProductContext } from "@/components/Layout/ProductContext";
 import Button from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 const Product = ({ product }) => {
+  const { addProductToCart, removeProductFromCart, cartItems } =
+    useProductContext();
+  const isProductInCart = cartItems.some((item) => item.id === product.id);
+  const [selectedSize, setSelectedSize] = useState("smallSize");
+
+  const handleCartItems = () => {
+    if (isProductInCart) {
+      removeProductFromCart(product.id);
+    } else {
+      addProductToCart({
+        ...product,
+        quantity: 1,
+        size: selectedSize,
+      });
+    }
+  };
+
   const sizeOptions = [
     { label: "S", value: "smallSize" },
     { label: "M", value: "mediumSize" },
     { label: "L", value: "largeSize" },
   ];
-  const BASE_URL = process.env.BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   return (
     <div className="my-10 p-5 rounded-xl bg-white grid grid-cols-2 gap-5">
@@ -54,6 +76,9 @@ const Product = ({ product }) => {
                   id={`sizes-${item.value}`}
                   name="sizes"
                   className="hidden peer"
+                  value={item.value}
+                  checked={selectedSize === item.value}
+                  onChange={() => setSelectedSize(item.value)}
                 />
                 <label
                   htmlFor={`sizes-${item.value}`}
@@ -70,7 +95,15 @@ const Product = ({ product }) => {
         <p className="text-gray-600">{product?.description}</p>
 
         <div className="my-7 flex gap-x-5">
-          <Button className="custom-outline-btn w-full">Add to Cart</Button>
+          <Button
+            className={cn(
+              "w-full custom-outline-btn",
+              isProductInCart && "border-red-400 text-red-500"
+            )}
+            onClick={handleCartItems}
+          >
+            {isProductInCart ? "Remove from Cart" : "Add to Cart"}
+          </Button>
           <Button className="w-full">Buy Now</Button>
         </div>
       </div>

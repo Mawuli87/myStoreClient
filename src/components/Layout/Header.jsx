@@ -3,10 +3,10 @@
 import { SearchIcon, UserIcon, CartIcon } from "@/app/icons";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import Input from "../ui/input";
+import Input from "../ui/Input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { objectToQueryString } from "@/lib/utils";
-import Script from "next/script";
+import { useProductContext } from "./ProductContext";
 
 const Header = () => {
   const searchParams = useSearchParams();
@@ -72,52 +72,57 @@ const Header = () => {
     };
   }, [dropdownOpen]);
 
+  const { cartItems } = useProductContext();
+
   return (
-    <>
-      <Script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-        strategy="beforeInteractive"
-      />
-      <div className="navbar">
-        <div className="container">
-          <div className="flex justify-between items-center">
+    <div className="navbar">
+      <div className="container">
+        <div className="flex justify-between items-center">
+          <Link href="/">
             <h1 className="text-3xl font-semibold">MyStore</h1>
+          </Link>
 
-            <div className="relative w-full max-w-lg">
-              <SearchIcon className="absolute left-2 top-2 w-7 h-7" />
-              <Input
-                placeholder="Search Product..."
-                className="pl-10"
-                value={search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-              />
+          <div className="relative w-full max-w-lg">
+            <SearchIcon className="absolute left-2 top-2 w-7 h-7" />
+            <Input
+              placeholder="Search Product..."
+              className="pl-10"
+              value={search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+            />
+          </div>
+
+          <div className="relative" ref={dropdownRef}>
+            <div className="flex gap-3">
+              <Link href="/cart">
+                <div className="relative">
+                  <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex justify-center items-center text-xs font-semibold">
+                    {cartItems.length}
+                  </div>
+                  <CartIcon className="w-7 h-7" />
+                </div>
+              </Link>
+              <button className="icon-button" onClick={toggleDropdown}>
+                <UserIcon className="w-7 h-7" />
+              </button>
             </div>
-
-            <div className="relative" ref={dropdownRef}>
-              <div className="flex gap-3">
-                <CartIcon className="w-7 h-7" />
-                <button className="icon-button" onClick={toggleDropdown}>
-                  <UserIcon className="w-7 h-7" />
+            {dropdownOpen && (
+              <div className="dropdown-menu">
+                <Link
+                  href="/"
+                  className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-100"
+                >
+                  My Wishlist
+                </Link>
+                <button className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-100 w-full text-left">
+                  Logout
                 </button>
               </div>
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link
-                    href="/"
-                    className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-100"
-                  >
-                    My Wishlist
-                  </Link>
-                  <button className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-100 w-full text-left">
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
